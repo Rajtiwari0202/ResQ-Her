@@ -1,0 +1,15 @@
+# FastAPI and supporting tools
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.2
+
+# MongoDB Connection
+pymongo==4.6.0
+
+# AI/LLM - Using Google's Generative AI as our free tier alternative
+google-genai==0.6.0  # Python SDK for Gemini API
+# We are REMOVING: 'boto3' (AWS SDK) and 'Groq' for now to simplify and go free.
+# We will use another free/local method for image generation later.
+
+pillow==10.1.0       # For image manipulation (steganography)
+python-dotenv==1.0.0 # To read the .env file

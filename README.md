@@ -51,62 +51,42 @@ Only a fraction of survivors have access to formal legal support. Our Law Bot pr
 | **Deployment** | Vercel (Frontend), Render (Backend) | CI/CD and hosting solutions. |
 
 ---
-
-### 🚀 Getting Started
-
+# 🚀 Getting Started
 Follow these steps to set up and run ResQ-Her locally.
 
-#### **Prerequisites**
+### Prerequisites
 
-* A MongoDB Atlas Cluster
-* AWS Configurations (Access Key, Secret Key, Region) for Bedrock and S3
-* Groq API Key (for fast inference)
-* Clerk Key (for authentication)
-* Elevenlabs Key (for text-to-speech)
+* A MongoDB Atlas Cluster (M0 Free Tier is sufficient)
+* **Google Gemini API Key** (for free-tier LLM services)
+* Clerk Key (for authentication - generous free tier)
+* Elevenlabs Key (for text-to-speech - free tier limits apply)
 
-#### **1. Backend Setup**
+---
+### 1. Backend Setup (Python / FastAPI)
 
-1.  **Activate Virtual Environment:**
+1.  **Create Virtual Environment and Activate it:**
+    (This isolates your Python dependencies from your system)
     ```bash
     python -m venv .venv
     .\.venv\Scripts\Activate # (on Windows)
     # or `source .venv/bin/activate` (on Linux/macOS)
     ```
+
 2.  **Install Dependencies:**
     ```bash
     pip install -r backend/requirements.txt
     ```
+
 3.  **Create `.env` File:**
+    (Create this file in the project root to store your secret keys)
     ```
     MONGO_ENDPOINT=
-    AWS_ACCESS_KEY_ID=
-    AWS_SECRET_ACCESS_KEY=
-    AWS_REGION=
-    S3_BUCKET_NAME=
-    GROQ_API_TOKEN=
+    GEMINI_API_KEY=
+    # S3_BUCKET_NAME=  # Removed, we will use a different free storage method later.
     ```
-4.  **Run the Server:**
-    ```bash
-    fastapi dev backend/main.py 
-    # or uvicorn backend.main:app --reload
-    ```
-    (View endpoints at `http://127.0.0.1:8000/docs`)
 
-#### **2. Frontend Setup**
-
-1.  **Install Packages:**
+4.  **Run the Server (Requires a basic entry file, which we'll add next):**
     ```bash
-    npm install
+    fastapi dev backend/main.py # or uvicorn backend.main:app --reload
     ```
-2.  **Create `.env.local` File:**
-    ```
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
-    CLERK_SECRET_KEY=
-    NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-    NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-    ```
-3.  **Start the Application:**
-    ```bash
-    npm run dev
-    ```
-    (Access the app at `http://localhost:3000/`)
+    (View endpoints at http://127.0.0.1:8000/docs)
