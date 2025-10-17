@@ -1,80 +1,109 @@
+// frontend/src/app/therapy-bot/page.tsx
 'use client';
-import Link from 'next/link';
-import { ArrowLeft, MessageSquare, Mic } from 'lucide-react';
+
+import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
+interface ChatMessage {
+  text: string;
+  sender: 'user' | 'bot';
+}
 
 export default function TherapyBotPage() {
-    return (
-        <div className="flex flex-col h-screen bg-gray-50">
-            {/* Header */}
-            <header className="flex items-center justify-between p-4 bg-purple-600 text-white shadow-md">
-                <Link href="/" className="flex items-center space-x-2">
-                    <ArrowLeft className="h-6 w-6" />
-                    <h1 className="text-xl font-semibold">Therapy Bot (24/7 Support)</h1>
-                </Link>
-                <div className="flex items-center space-x-2 bg-purple-500 p-1 rounded-full text-sm">
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                    <span>Online</span>
-                </div>
-            </header>
+  const [inputMessage, setInputMessage] = useState('');
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    { text: "Hi, I just need a safe space to talk right now.", sender: 'user' },
+    { text: "I hear you. Take a deep breath. What would you like to share with me today?", sender: 'bot' }
+  ]);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
-            {/* AI Avatar and Chat Area */}
-            <div className="flex-1 flex flex-col items-center justify-start p-6 overflow-y-auto">
-                
-                {/* Avatar Area Mock */}
-                <div className="w-40 h-40 bg-purple-300 rounded-full shadow-xl mb-6 flex items-center justify-center border-4 border-purple-500">
-                    <span className="text-purple-800 text-sm font-bold">AI Avatar</span>
-                </div>
+  useEffect(() => {
+    // Scroll to bottom on new messages
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
 
-                {/* Status Message */}
-                <div className="w-full max-w-lg p-4 bg-white border border-purple-200 rounded-lg shadow-lg text-center">
-                    <p className="text-gray-700 font-medium">
-                        "I am here to listen without judgment. All conversations are private and confidential."
-                    </p>
-                </div>
+  const handleSendMessage = () => {
+    if (!inputMessage.trim()) return;
 
-                {/* Mock Chat History */}
-                <div className="w-full max-w-lg mt-8 space-y-4">
-                    <div className="flex justify-start">
-                        <div className="p-3 bg-purple-100 rounded-lg text-gray-800">
-                            <p>Hi, I just need a safe space to talk right now.</p>
-                        </div>
-                    </div>
-                    <div className="flex justify-end">
-                        <div className="p-3 bg-white border border-gray-300 rounded-lg text-gray-800">
-                            <p>I hear you. Take a deep breath. What would you like to share with me today?</p>
-                            <span className="text-xs text-gray-500 block mt-1">
-                                (Simulated AI Response - Future API Integration)
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    const userMessage: ChatMessage = { text: inputMessage, sender: 'user' };
+    setMessages((prev) => [...prev, userMessage]);
+    setInputMessage('');
 
-            {/* Input Form */}
-            <div className="p-4 border-t border-gray-300 bg-white">
-                <div className="flex space-x-3">
-                    <input
-                        type="text"
-                        placeholder="Type your message or hold the mic..."
-                        className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        disabled
-                    />
-                    <button
-                        className="bg-purple-600 text-white p-3 rounded-lg flex items-center justify-center hover:bg-purple-700 transition disabled:bg-gray-400"
-                        title="Mic input (Future Feature)"
-                        disabled
-                    >
-                        <Mic className="h-5 w-5" />
-                    </button>
-                    <button
-                        className="bg-purple-600 text-white p-3 rounded-lg flex items-center justify-center hover:bg-purple-700 transition disabled:bg-gray-400"
-                        title="Send text (Future Feature)"
-                        disabled
-                    >
-                        <MessageSquare className="h-5 w-5" />
-                    </button>
-                </div>
-            </div>
+    // Simulate bot response (replace with actual API call for Gemini in the future)
+    setTimeout(() => {
+      const botResponse: ChatMessage = { text: "I'm here to listen. Tell me more about what's on your mind.", sender: 'bot' };
+      setMessages((prev) => [...prev, botResponse]);
+    }, 1000);
+  };
+
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '2rem', backgroundColor: '#1c1c24', color: '#f4f4f5' }}>
+      
+      {/* Header */}
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', padding: '1rem', borderBottom: '1px solid #343440', backgroundColor: '#1c1c24', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <button onClick={() => router.back()} style={{ backgroundColor: 'transparent', border: 'none', color: '#f4f4f5', fontSize: '1.5rem', marginRight: '1rem', cursor: 'pointer' }}>
+            ←
+          </button>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Therapy Bot (24/7 Support)</h1>
         </div>
-    );
+        <span style={{ fontSize: '0.9rem', color: '#703091', fontWeight: 'bold' }}>Online</span>
+      </div>
+
+      <div style={{ marginTop: '6rem', flexGrow: 1, width: '100%', maxWidth: '800px', display: 'flex', flexDirection: 'column', backgroundColor: '#2a2a35', borderRadius: '12px', border: '1px solid #703091', overflow: 'hidden' }}>
+        
+        {/* Bot Intro/Avatar */}
+        <div style={{ padding: '1rem', backgroundColor: '#343440', textAlign: 'center', borderBottom: '1px solid #703091' }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#703091', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: 'white' }}>
+            AI
+          </div>
+          <p style={{ fontSize: '0.9rem', color: '#ccc', marginTop: '0.5rem' }}>"I am here to listen without judgment. All conversations are private and confidential."</p>
+        </div>
+
+        {/* Chat Messages Area */}
+        <div style={{ flexGrow: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {messages.map((msg, index) => (
+            <div key={index} style={{ 
+              alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start', 
+              backgroundColor: msg.sender === 'user' ? '#4c7cff' : '#343440', 
+              color: '#f4f4f5', 
+              padding: '0.75rem 1rem', 
+              borderRadius: '1rem', 
+              maxWidth: '70%', 
+              wordWrap: 'break-word' 
+            }}>
+              {msg.text}
+              {msg.sender === 'bot' && index === messages.length - 1 && (
+                <p style={{ fontSize: '0.75rem', color: '#ccc', marginTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '0.25rem' }}>
+                  (Simulated AI Response - Future API Integration)
+                </p>
+              )}
+            </div>
+          ))}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Chat Input */}
+        <div style={{ borderTop: '1px solid #703091', padding: '1rem', backgroundColor: '#2a2a35', display: 'flex', gap: '0.5rem' }}>
+          <input
+            type="text"
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+            placeholder="Type your message or hold the mic..."
+            style={{ flexGrow: 1, padding: '0.75rem', borderRadius: '8px', border: '1px solid #703091', backgroundColor: '#1c1c24', color: '#f4f4f5', outline: 'none' }}
+          />
+          <button
+            onClick={handleSendMessage}
+            style={{ padding: '0.75rem 1.25rem', borderRadius: '8px', backgroundColor: '#703091', color: 'white', fontWeight: 'bold', border: 'none', cursor: 'pointer', transition: 'background-color 0.3s' }}
+          >
+            Send
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
