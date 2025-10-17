@@ -1,0 +1,29 @@
+@import "tailwindcss/preflight"; /* New V4 syntax for base styles */
+@import "tailwindcss/utilities"; /* New V4 syntax for utilities (includes components) */
+
+@layer base {
+  :root {
+    /* Define color variables based on our custom Tailwind palette */
+    --foreground-rgb: 244, 244, 244; /* Light text (text-text-light) */
+    --background-rgb: 28, 28, 36; /* Deep Indigo/Dark Gray (bg-background) */
+  }
+
+  /* Apply the dark theme to the body */
+  body {
+    /* Use CSS variables for application background and font color */
+    color: rgb(var(--foreground-rgb));
+    background-color: rgb(var(--background-rgb));
+    min-height: 100vh; /* Ensure the body spans the full viewport height */
+  }
+
+  /* Set links to a clear, visible color on a dark background */
+  a {
+    color: #b8a0ff; /* Light purple for links */
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  a:hover {
+    color: #fff;
+    text-decoration: underline;
+  }
+}

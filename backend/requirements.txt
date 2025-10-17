@@ -6,10 +6,18 @@ pydantic==2.5.2
 # MongoDB Connection
 pymongo==4.6.0
 
-# AI/LLM - Using Google's Generative AI as our free tier alternative
-google-genai==0.6.0  # Python SDK for Gemini API
-# We are REMOVING: 'boto3' (AWS SDK) and 'Groq' for now to simplify and go free.
-# We will use another free/local method for image generation later.
+# AI/LLM - Google's Generative AI
+google-genai==0.6.0
 
-pillow==10.1.0       # For image manipulation (steganography)
-python-dotenv==1.0.0 # To read the .env file
+# Utilities
+pillow==10.1.0
+python-dotenv==1.0.0
+
+# Vector Embeddings and RAG Libraries - Using the latest versions available
+# Core AI Dependencies (Pinning to KNOWN STABLE COMBO)
+numpy==1.26.4
+transformers==4.35.2      # <--- Stable Version
+sentence-transformers==2.2.2 # <--- Stable Version
+huggingface-hub==0.17.3   # <--- Stable Version for older s-t
+torch==2.3.0              # <--- A recent, well-tested version
+faiss-cpu==1.11.0         # <--- Version confirmed available
