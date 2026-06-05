@@ -1,21 +1,36 @@
-// frontend/src/app/sos/page.tsx
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import {
+  ArrowLeft,
+  CheckCircle2,
+  Image as ImageIcon,
+  Loader2,
+  MapPinned,
+  RadioTower,
+  Send,
+  ShieldAlert,
+  Sparkles,
+} from 'lucide-react';
+import Link from 'next/link';
+import { useMemo, useState } from 'react';
 
 export default function SOSPage() {
-  const [keywords, setKeywords] = useState('');
+  const [keywords, setKeywords] = useState('locked room, cannot call, need police near metro gate');
   const [expandedMessage, setExpandedMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const router = useRouter();
+
+  const preview = useMemo(() => {
+    if (expandedMessage) return expandedMessage;
+    return 'I need urgent help. I am unable to speak safely. Please treat this as a priority distress alert and dispatch support to my current location.';
+  }, [expandedMessage]);
 
   const handleExpandMessage = async () => {
     if (!keywords.trim()) {
-      setError('Please enter some keywords.');
+      setError('Add a few keywords so the alert can be expanded.');
       return;
     }
+
     setError('');
     setLoading(true);
     setExpandedMessage('');
@@ -30,73 +45,124 @@ export default function SOSPage() {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP error: ${response.status}`);
       }
 
       const data = await response.json();
       setExpandedMessage(data.expanded_text);
     } catch (err) {
       console.error('Failed to expand message:', err);
-      setError('Failed to generate message. Please try again.');
+      setError('Backend is unavailable, so this screen is showing the local safe-alert preview.');
+      setExpandedMessage(
+        `Priority distress alert: ${keywords}. I may be monitored and cannot call safely. Please send verified emergency support and use my latest shared location.`
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '2rem', backgroundColor: '#1c1c24', color: '#f4f4f5' }}>
-      
-      {/* Header */}
-      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', padding: '1rem', borderBottom: '1px solid #343440', backgroundColor: '#1c1c24', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-        <button onClick={() => router.back()} style={{ backgroundColor: 'transparent', border: 'none', color: '#f4f4f5', fontSize: '1.5rem', marginRight: '1rem', cursor: 'pointer' }}>
-          ←
-        </button>
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Immediate SOS & Alert</h1>
-      </div>
+    <main className="app-shell">
+      <header className="topbar">
+        <Link className="brand" href="/">
+          <span className="brand-mark">
+            <ShieldAlert size={22} />
+          </span>
+          <span>
+            <p className="brand-title">Silent SOS</p>
+            <p className="brand-subtitle">Generate, encode, and route a distress signal</p>
+          </span>
+        </Link>
+        <Link className="ghost-button" href="/">
+          <ArrowLeft size={17} />
+          Dashboard
+        </Link>
+      </header>
 
-      <div style={{ marginTop: '6rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2rem', width: '100%', maxWidth: '600px', backgroundColor: '#2a2a35', padding: '2rem', borderRadius: '12px', border: '1px solid #cc0000' }}>
-        <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#cc0000', textAlign: 'center' }}>Need Help Now.</p>
-        <span style={{ fontSize: '3rem', color: '#cc0000', animation: 'pulse 1.5s infinite' }}>⚡</span>
-        <p style={{ fontSize: '1rem', color: '#f4f4f5', textAlign: 'center' }}>HOLD & TAP FOR HELP</p>
+      <section className="page-wrap">
+        <div className="page-head">
+          <div>
+            <p className="eyebrow">
+              <RadioTower size={16} />
+              Emergency signal builder
+            </p>
+            <h1 className="page-title">Help can start with three quiet words.</h1>
+            <p className="page-copy">
+              Type fragments, locations, or clues. ResQ-Her expands them into a formal
+              responder-ready alert while preserving a calm, low-attention interface.
+            </p>
+          </div>
+          <button className="danger-button" onClick={handleExpandMessage} disabled={loading}>
+            {loading ? <Loader2 className="animate-spin" size={18} /> : <Send size={18} />}
+            Build alert
+          </button>
+        </div>
 
-        {/* Keywords Input */}
-        <input
-          type="text"
-          value={keywords}
-          onChange={(e) => setKeywords(e.target.value)}
-          placeholder="Optional: Enter keywords (e.g., 'trap, locked, address is 123')"
-          style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #703091', backgroundColor: '#1c1c24', color: '#f4f4f5', outline: 'none' }}
-        />
+        <div className="sos-grid">
+          <div className="glass-panel sos-card">
+            <button className="sos-button" onClick={handleExpandMessage} disabled={loading}>
+              <span>
+                <strong>SOS</strong>
+                <span>hold-ready alert</span>
+              </span>
+            </button>
+            <div className="chip-row">
+              <span className="chip">
+                <MapPinned size={15} />
+                Location packet
+              </span>
+              <span className="chip">
+                <ImageIcon size={15} />
+                Stego-ready message
+              </span>
+              <span className="chip">
+                <CheckCircle2 size={15} />
+                Authority format
+              </span>
+            </div>
+          </div>
 
-        {/* Send Detailed Alert Button */}
-        <button
-          onClick={handleExpandMessage}
-          disabled={loading}
-          style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', backgroundColor: loading ? '#888' : '#cc0000', color: 'white', fontWeight: 'bold', cursor: loading ? 'not-allowed' : 'pointer', border: 'none', transition: 'background-color 0.3s' }}
-        >
-          {loading ? 'Generating...' : 'Send Detailed Alert'}
-        </button>
+          <div className="glass-panel sos-card form-stack">
+            <div className="field">
+              <label htmlFor="keywords">Distress keywords</label>
+              <textarea
+                className="textarea"
+                id="keywords"
+                value={keywords}
+                onChange={(event) => setKeywords(event.target.value)}
+                placeholder="Example: trapped, blue gate, husband angry, cannot call"
+              />
+            </div>
 
-        {/* Error Message */}
-        {error && <p style={{ color: '#ff6666', marginTop: '0.5rem' }}>{error}</p>}
-      </div>
+            <div>
+              <div className="step">
+                <Sparkles size={20} />
+                <span>
+                  <strong>AI expansion</strong>
+                  <br />
+                  Converts fragments into a concise emergency message.
+                </span>
+              </div>
+              <div className="step">
+                <ImageIcon size={20} />
+                <span>
+                  <strong>Innocent carrier</strong>
+                  <br />
+                  Designed for the project steganography flow described in the repo.
+                </span>
+              </div>
+            </div>
 
-      {/* Message Preview */}
-      <div style={{ position: 'fixed', bottom: 0, left: 0, width: '100%', padding: '1rem', borderTop: '1px solid #703091', backgroundColor: '#2a2a35', color: '#f4f4f5' }}>
-        <p style={{ fontSize: '0.9rem', color: '#ccc' }}>Message Preview:</p>
-        <p style={{ marginTop: '0.5rem', minHeight: '3rem', border: '1px dashed #703091', padding: '0.5rem', borderRadius: '4px', backgroundColor: '#1c1c24' }}>
-          {expandedMessage || 'Use the button or enter keywords to generate a formal alert message for authorities.'}
-        </p>
-      </div>
-
-      {/* Pulsing animation for the lightning bolt */}
-      <style>{`
-        @keyframes pulse {
-          0% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.1); opacity: 0.8; }
-          100% { transform: scale(1); opacity: 1; }
-        }
-      `}</style>
-    </div>
+            <div>
+              <label className="field">
+                <span>Responder preview</span>
+              </label>
+              <div className="alert-preview">{preview}</div>
+            </div>
+            {error && <p className="error-text">{error}</p>}
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }

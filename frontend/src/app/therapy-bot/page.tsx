@@ -1,109 +1,164 @@
-// frontend/src/app/therapy-bot/page.tsx
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import {
+  ArrowLeft,
+  Brain,
+  HeartHandshake,
+  Leaf,
+  Mic,
+  Moon,
+  Send,
+  Sparkles,
+  Wind,
+} from 'lucide-react';
+import Link from 'next/link';
+import { useEffect, useRef, useState } from 'react';
 
 interface ChatMessage {
   text: string;
   sender: 'user' | 'bot';
 }
 
+const moodCards = [
+  { label: 'Grounding', copy: '5 things you see, 4 you feel, 3 you hear.', icon: Leaf },
+  { label: 'Breathing', copy: 'Slow inhale for 4, hold for 2, exhale for 6.', icon: Wind },
+  { label: 'Night support', copy: 'Short reflections for panic, shame, and fear.', icon: Moon },
+  { label: 'Plan safety', copy: 'Name one trusted contact and one exit route.', icon: Brain },
+];
+
 export default function TherapyBotPage() {
   const [inputMessage, setInputMessage] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { text: "Hi, I just need a safe space to talk right now.", sender: 'user' },
-    { text: "I hear you. Take a deep breath. What would you like to share with me today?", sender: 'bot' }
+    { text: 'Hi, I just need a safe space to talk right now.', sender: 'user' },
+    {
+      text: 'You are not a burden here. Start with one sentence, or choose a grounding exercise from the left.',
+      sender: 'bot',
+    },
   ]);
+  const [typing, setTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
 
   useEffect(() => {
-    // Scroll to bottom on new messages
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages]);
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, typing]);
 
-  const handleSendMessage = () => {
-    if (!inputMessage.trim()) return;
+  const sendMessage = (value = inputMessage) => {
+    if (!value.trim() || typing) return;
 
-    const userMessage: ChatMessage = { text: inputMessage, sender: 'user' };
-    setMessages((prev) => [...prev, userMessage]);
+    const prompt = value.trim();
+    setMessages((prev) => [...prev, { text: prompt, sender: 'user' }]);
     setInputMessage('');
+    setTyping(true);
 
-    // Simulate bot response (replace with actual API call for Gemini in the future)
     setTimeout(() => {
-      const botResponse: ChatMessage = { text: "I'm here to listen. Tell me more about what's on your mind.", sender: 'bot' };
-      setMessages((prev) => [...prev, botResponse]);
-    }, 1000);
+      setMessages((prev) => [
+        ...prev,
+        {
+          text: 'I am with you. Let us make the next few minutes smaller: unclench your jaw, put both feet on the floor, and tell me what feels most urgent right now.',
+          sender: 'bot',
+        },
+      ]);
+      setTyping(false);
+    }, 700);
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '2rem', backgroundColor: '#1c1c24', color: '#f4f4f5' }}>
-      
-      {/* Header */}
-      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', padding: '1rem', borderBottom: '1px solid #343440', backgroundColor: '#1c1c24', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <button onClick={() => router.back()} style={{ backgroundColor: 'transparent', border: 'none', color: '#f4f4f5', fontSize: '1.5rem', marginRight: '1rem', cursor: 'pointer' }}>
-            ←
-          </button>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Therapy Bot (24/7 Support)</h1>
-        </div>
-        <span style={{ fontSize: '0.9rem', color: '#703091', fontWeight: 'bold' }}>Online</span>
-      </div>
+    <main className="app-shell">
+      <header className="topbar">
+        <Link className="brand" href="/">
+          <span className="brand-mark">
+            <HeartHandshake size={22} />
+          </span>
+          <span>
+            <p className="brand-title">Care Companion</p>
+            <p className="brand-subtitle">Trauma-aware support space</p>
+          </span>
+        </Link>
+        <Link className="ghost-button" href="/">
+          <ArrowLeft size={17} />
+          Dashboard
+        </Link>
+      </header>
 
-      <div style={{ marginTop: '6rem', flexGrow: 1, width: '100%', maxWidth: '800px', display: 'flex', flexDirection: 'column', backgroundColor: '#2a2a35', borderRadius: '12px', border: '1px solid #703091', overflow: 'hidden' }}>
-        
-        {/* Bot Intro/Avatar */}
-        <div style={{ padding: '1rem', backgroundColor: '#343440', textAlign: 'center', borderBottom: '1px solid #703091' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#703091', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: 'white' }}>
-            AI
+      <section className="page-wrap">
+        <div className="page-head">
+          <div>
+            <p className="eyebrow">
+              <Sparkles size={16} />
+              Private emotional first aid
+            </p>
+            <h1 className="page-title">A calmer room inside the app.</h1>
+            <p className="page-copy">
+              This screen makes the AI-avatar idea visible even without a 3D runtime:
+              a soft companion, guided coping cards, and a chat that feels quiet and safe.
+            </p>
           </div>
-          <p style={{ fontSize: '0.9rem', color: '#ccc', marginTop: '0.5rem' }}>"I am here to listen without judgment. All conversations are private and confidential."</p>
+          <span className="chip">
+            <span style={{ color: '#27d6b4' }}>Online</span>
+          </span>
         </div>
 
-        {/* Chat Messages Area */}
-        <div style={{ flexGrow: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {messages.map((msg, index) => (
-            <div key={index} style={{ 
-              alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start', 
-              backgroundColor: msg.sender === 'user' ? '#4c7cff' : '#343440', 
-              color: '#f4f4f5', 
-              padding: '0.75rem 1rem', 
-              borderRadius: '1rem', 
-              maxWidth: '70%', 
-              wordWrap: 'break-word' 
-            }}>
-              {msg.text}
-              {msg.sender === 'bot' && index === messages.length - 1 && (
-                <p style={{ fontSize: '0.75rem', color: '#ccc', marginTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '0.25rem' }}>
-                  (Simulated AI Response - Future API Integration)
-                </p>
-              )}
+        <div className="chat-layout">
+          <aside className="glass-panel side-rail">
+            <div className="avatar-orbit">
+              <div className="avatar-core">
+                <HeartHandshake size={56} />
+              </div>
             </div>
-          ))}
-          <div ref={messagesEndRef} />
-        </div>
+            <div className="mood-grid">
+              {moodCards.map((card) => {
+                const Icon = card.icon;
+                return (
+                  <button
+                    className="mood-card"
+                    key={card.label}
+                    onClick={() => sendMessage(card.copy)}
+                  >
+                    <Icon size={20} />
+                    <h3>{card.label}</h3>
+                    <p>{card.copy}</p>
+                  </button>
+                );
+              })}
+            </div>
+          </aside>
 
-        {/* Chat Input */}
-        <div style={{ borderTop: '1px solid #703091', padding: '1rem', backgroundColor: '#2a2a35', display: 'flex', gap: '0.5rem' }}>
-          <input
-            type="text"
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-            placeholder="Type your message or hold the mic..."
-            style={{ flexGrow: 1, padding: '0.75rem', borderRadius: '8px', border: '1px solid #703091', backgroundColor: '#1c1c24', color: '#f4f4f5', outline: 'none' }}
-          />
-          <button
-            onClick={handleSendMessage}
-            style={{ padding: '0.75rem 1.25rem', borderRadius: '8px', backgroundColor: '#703091', color: 'white', fontWeight: 'bold', border: 'none', cursor: 'pointer', transition: 'background-color 0.3s' }}
-          >
-            Send
-          </button>
+          <section className="glass-panel chat-panel">
+            <div className="chat-feed">
+              {messages.map((message, index) => (
+                <div className={`message ${message.sender}`} key={`${message.sender}-${index}`}>
+                  {message.text}
+                </div>
+              ))}
+              {typing && (
+                <div className="message bot">
+                  <Sparkles size={18} /> Companion is thinking...
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+
+            <div className="composer">
+              <button className="icon-button" title="Voice note placeholder" type="button">
+                <Mic size={18} />
+              </button>
+              <input
+                className="input"
+                value={inputMessage}
+                onChange={(event) => setInputMessage(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') sendMessage();
+                }}
+                placeholder="Type what you can say safely..."
+              />
+              <button className="solid-button" onClick={() => sendMessage()} disabled={typing}>
+                <Send size={18} />
+                Send
+              </button>
+            </div>
+          </section>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

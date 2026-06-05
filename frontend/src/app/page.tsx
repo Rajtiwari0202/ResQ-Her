@@ -1,79 +1,167 @@
 'use client';
 
-import { SignInButton, SignOutButton, UserButton, useUser } from '@clerk/nextjs';
+import { SignInButton, UserButton, useUser } from '@clerk/nextjs';
+import {
+  ArrowRight,
+  Bot,
+  HeartHandshake,
+  LockKeyhole,
+  MapPinned,
+  RadioTower,
+  Scale,
+  ShieldCheck,
+  Sparkles,
+  Zap,
+} from 'lucide-react';
 import Link from 'next/link';
 
-export default function Home() {
-  const { isSignedIn, user, isLoaded } = useUser();
+const features = [
+  {
+    href: '/sos',
+    title: 'Silent SOS',
+    copy: 'Turn short danger keywords into a structured alert and hide the intent behind a calm interface.',
+    icon: Zap,
+  },
+  {
+    href: '/law-bot',
+    title: 'Legal Rights Bot',
+    copy: 'Ask private questions about rights, documents, and next steps with source-aware responses.',
+    icon: Scale,
+  },
+  {
+    href: '/therapy-bot',
+    title: 'Care Companion',
+    copy: 'A confidential support space for grounding, reflection, and emotional first aid.',
+    icon: HeartHandshake,
+  },
+];
 
-  // Ensure the body has the dark background/light text from globals.css
+export default function Home() {
+  const { isLoaded, isSignedIn, user } = useUser();
+
   return (
-    <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '6rem', backgroundColor: '#1c1c24', color: '#f4f4f5' }}>
-      
-      {/* Header/Auth Status */}
-      <div style={{ position: 'absolute', top: 0, width: '100%', padding: '1rem', borderBottom: '1px solid #343440', backgroundColor: '#1c1c24', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <p style={{ fontWeight: 'bold' }}>ResQ-Her: A Silent Shield</p>
-        
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          {isLoaded ? (
-            isSignedIn ? (
-              <>
-                <p style={{ marginRight: '1rem', fontSize: '0.9rem' }}>Welcome, {user.firstName || user.emailAddresses[0].emailAddress}!</p>
-                <UserButton afterSignOutUrl="/" />
-              </>
-            ) : (
-              <SignInButton mode="modal">
-                <button style={{ 
-                    backgroundColor: '#703091', 
-                    color: 'white', 
-                    padding: '8px 16px', 
-                    borderRadius: '6px', 
-                    cursor: 'pointer' 
-                  }}>
-                  Sign In / Sign Up
-                </button>
-              </SignInButton>
-            )
+    <main className="app-shell">
+      <header className="topbar">
+        <Link className="brand" href="/" aria-label="ResQ-Her home">
+          <span className="brand-mark">
+            <ShieldCheck size={22} />
+          </span>
+          <span>
+            <p className="brand-title">ResQ-Her</p>
+            <p className="brand-subtitle">A silent shield, a strong voice</p>
+          </span>
+        </Link>
+
+        <div className="nav-actions">
+          <Link className="ghost-button" href="/law-bot">
+            <Scale size={17} />
+            Law Bot
+          </Link>
+          {isLoaded && isSignedIn ? (
+            <>
+              <span className="chip">Hi, {user?.firstName || 'Protector'}</span>
+              <UserButton afterSignOutUrl="/" />
+            </>
           ) : (
-            <p style={{ color: '#aaa' }}>Loading user...</p>
+            <SignInButton mode="modal">
+              <button className="solid-button">Sign in</button>
+            </SignInButton>
           )}
         </div>
-      </div>
+      </header>
 
-      {/* Main App Navigation - Clean, Simple List Structure */}
-      <div style={{ marginTop: '5rem', width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        
-        {/* SOS Card */}
-        <Link href="/sos" style={{ display: 'block', border: '1px solid #cc0000', padding: '1rem', borderRadius: '8px', backgroundColor: '#2a2a35' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#cc0000', marginBottom: '0.5rem' }}>
-            SOS & Alert →
-          </h2>
-          <p style={{ fontSize: '0.9rem', color: '#ccc' }}>
-            Activate a discreet alert, share your live location, and get instant help.
+      <section className="hero">
+        <div>
+          <p className="eyebrow">
+            <RadioTower size={16} />
+            Survivor-first safety operating system
           </p>
-        </Link>
-
-        {/* Law Bot Card */}
-        <Link href="/law-bot" style={{ display: 'block', border: '1px solid #703091', padding: '1rem', borderRadius: '8px', backgroundColor: '#2a2a35' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#703091', marginBottom: '0.5rem' }}>
-            Law Bot →
-          </h2>
-          <p style={{ fontSize: '0.9rem', color: '#ccc' }}>
-            Ask confidential questions about legal rights using our RAG AI knowledge base.
+          <h1>ResQ-Her turns silence into a signal.</h1>
+          <p className="hero-copy">
+            A polished AI safety hub for discreet alerts, trauma-aware support,
+            and practical legal guidance. Built for moments when asking for help
+            has to be quiet, fast, and trusted.
           </p>
-        </Link>
 
-        {/* Therapy Bot Card */}
-        <Link href="/therapy-bot" style={{ display: 'block', border: '1px solid #703091', padding: '1rem', borderRadius: '8px', backgroundColor: '#2a2a35' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#703091', marginBottom: '0.5rem' }}>
-            Therapy Bot →
-          </h2>
-          <p style={{ fontSize: '0.9rem', color: '#ccc' }}>
-            Access 24/7 confidential mental health support and coping strategies.
-          </p>
-        </Link>
+          <div className="hero-actions">
+            <Link className="danger-button" href="/sos">
+              Start SOS flow
+              <ArrowRight size={18} />
+            </Link>
+            <Link className="ghost-button" href="/therapy-bot">
+              Talk to care bot
+              <Bot size={18} />
+            </Link>
+          </div>
 
-      </div>
+          <div className="metric-row" aria-label="Project highlights">
+            <div className="metric">
+              <strong>3</strong>
+              <span>critical support paths</span>
+            </div>
+            <div className="metric">
+              <strong>24/7</strong>
+              <span>private companion UI</span>
+            </div>
+            <div className="metric">
+              <strong>RAG</strong>
+              <span>legal guidance workflow</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="mission-panel" aria-label="Live safety command preview">
+          <div className="signal-map">
+            <div className="signal-line" />
+            <span className="pulse-node one">
+              <LockKeyhole size={30} />
+            </span>
+            <span className="pulse-node two">
+              <MapPinned size={30} />
+            </span>
+            <span className="pulse-node three">
+              <Sparkles size={30} />
+            </span>
+          </div>
+          <div className="status-strip">
+            <div className="status-item">
+              <span>Alert packet</span>
+              Encoded
+            </div>
+            <div className="status-item">
+              <span>Responder route</span>
+              Ready
+            </div>
+            <div className="status-item">
+              <span>Privacy mode</span>
+              Active
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="feature-band" aria-label="Core product modules">
+        <div className="feature-grid">
+          {features.map((feature) => {
+            const Icon = feature.icon;
+            return (
+              <Link className="feature-card" href={feature.href} key={feature.title}>
+                <span>
+                  <span className="feature-icon">
+                    <Icon size={22} />
+                  </span>
+                  <h2>{feature.title}</h2>
+                  <p>{feature.copy}</p>
+                </span>
+                <span className="chip">
+                  Open module
+                  <ArrowRight size={14} />
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
     </main>
   );
 }

@@ -2,6 +2,10 @@ import { NextConfig } from "next";
 import path from "path";
 
 const nextConfig: NextConfig = {
+    turbopack: {
+        root: __dirname,
+    },
+
     // This setting explicitly tells Next.js where your source code is.
     // This is vital for correctly resolving absolute paths like "@/components/..."
     // and helps the compiler correctly locate files like your CSS imports.
